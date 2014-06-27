@@ -29,8 +29,6 @@ def download():
     br.click_link_by_partial_href('CDSFinal.aspx?year=2012&surveyNumber=3&fileNumber=4&sectionNumber=1&qv1=&qv2=&qv3=&command=csv')
     exit(0)
 
-page = br.html
-
 if "In order to get a custom data set, select data to include" in page:
     variables()
 elif "Completions, awards and degrees by 6-digit cipcode" in page:
