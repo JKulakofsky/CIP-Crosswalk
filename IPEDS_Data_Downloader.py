@@ -3,38 +3,47 @@
 # program (CIP), award level, race/ethnicity, and gender: July 1, 2011
 # to June 30, 2012."
 
-from sys import exit
-from splinter import Browser
+from selenium import webdriver
+from os import getcwd
 import time
 
-br = Browser()
-br.visit('http://nces.ed.gov/ipeds/datacenter/LoadSession.aspx')
-br.fill('tbJobNumberToLoad', 'Guest_83245948923')
-button = br.find_by_name('ibtnLoadJobNumber')
-button.click()
-br.click_link_by_partial_href('CDSPreview.aspx?stepId=4')
+fp = webdriver.FirefoxProfile()
+
+fp.set_preference("browser.download.folderList",2)
+fp.set_preference("browser.download.manager.showWhenStarting",False)
+fp.set_preference("browser.download.dir",getcwd())
+fp.set_preference("browser.helperApps.neverAsk.saveToDisk","application/vnd.ms-excel")
+
+browser = webdriver.Firefox(firefox_profile=fp)
+
+browser.get('http://nces.ed.gov/ipeds/datacenter/LoadSession.aspx')
+form = browser.find_element_by_id('tbJobNumberToLoad')
+form.send_keys('Guest_83245948923')
+browser.find_element_by_name('ibtnLoadJobNumber').click()
+browser.find_element_by_xpath('//*[@id="ctl00_contentPlaceHolder_divInstructions"]/table/tbody/tr/td[2]/a/img').click()
 
 def variables():
     """Selects the proper fields to generate the download data"""
 
-    br.find_by_id('divSurveytitle3').click()
-    br.find_by_id('divFileTitle4').click()
-    br.click_link_by_partial_href('javascript:void(0)')
-    br.find_by_id('imgContinueButton').click()
+    browser.find_element_by_id('divSurveytitle3').click()
+    browser.find_element_by_id('divFileTitle4').click()
+    browser.find_element_by_xpath('//*[@id="divSection1_4_Variables"]/div[4]/div[2]/div[1]/a[1]').click()
+    browser.find_element_by_id('imgContinueButton').click()
     download()
 
 def download():
     """Downloads the .csv file"""
 
-    br.click_link_by_partial_href('CDSFinal.aspx?year=2012&surveyNumber=3&fileNumber=4&sectionNumber=1&qv1=&qv2=&qv3=&command=csv')
-    exit(0)
+    browser.find_element_by_xpath('//*[@id="ctl00_contentPlaceHolder_divAllVariablesPerYear2012"]/div[2]/div[2]/div[1]/a').click()
 
-if "In order to get a custom data set, select data to include" in page:
+words =  browser.page_source
+
+if "In order to get a custom data set, select data to include" in words:
     variables()
-elif "Completions, awards and degrees by 6-digit cipcode" in page:
+elif "Completions, awards and degrees by 6-digit cipcode" in words:
     download()
 else:
     print "Everything is ruined, nothing is what it seems, and your program is broken."
 
-time.sleep(5)
-br.quit()
+time.sleep(150)
+browser.close()
