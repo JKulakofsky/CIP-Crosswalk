@@ -17,8 +17,11 @@ fp.set_preference("browser.helperApps.neverAsk.saveToDisk","application/vnd.ms-e
 browser = webdriver.Firefox(firefox_profile=fp)
 browser.get('http://nces.ed.gov/ipeds/cipcode/resources.aspx?y=55')
 browser.find_element_by_xpath('//*[@id="ctl00_ctl00_CIPContent_ContentPlaceHolder1_LinkButton_FINALCIPtoSOCcrosswalk"]').click()
+time.sleep(10)
 
-time.sleep(30)
+browser.find_element_by_xpath('//*[@id="ctl00_ctl00_CIPContent_ContentPlaceHolder1_LinkButton_CurrentExcelCrosswalk"]').click()
+time.sleep(10)
+
 browser.close()
 
 directory = os.listdir('../Project')
